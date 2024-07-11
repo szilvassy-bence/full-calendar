@@ -18,7 +18,10 @@ final class TestBookingService extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->bookingService = new BookingService();
+        $openingHour = 8;
+        $closingHour = 20;
+        $closedDays = [Day::SATURDAY, Day::SUNDAY];
+        $this->bookingService = new BookingService($openingHour, $closingHour, $closedDays);
     }
 
     protected function tearDown() : void
