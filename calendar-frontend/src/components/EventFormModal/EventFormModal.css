@@ -1,0 +1,41 @@
+#modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  z-index: 1000; /* Ensure it's above other content */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#modal {
+  position: relative;
+  width: 50%;
+  min-width: 300px;
+  max-width: 600px;
+  background-color: white;
+  border: 1px solid grey;
+  border-radius: 10px;
+  padding: 30px;
+  z-index: 1010; /* Ensure modal appears above backdrop */
+}
+
+#modal-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+#modal-form {
+	display: flex;
+	flex-direction: column;
+}
+
+#modal-form label {
+	display: flex;
+	flex-direction: column;
+	margin-top: 10px;
+}
