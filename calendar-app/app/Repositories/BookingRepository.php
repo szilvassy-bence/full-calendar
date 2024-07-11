@@ -21,17 +21,7 @@ class BookingRepository
     public function store(BookingRequest $request): int
     {
         $booking = new Booking();
-        $booking->start_date = $request['start_date'];
-        if ($request['end_date']){
-            $booking->end_date = $request['end_date'];
-        } else {
-            $booking->end_date = null;
-        }
-        $booking->start_time = $request['start_time'];
-        $booking->end_time = $request['end_time'];
-        $booking->day = $request['day'];
-        $booking->repetition = $request['repetition'];
-        $booking->user = $request['user'];
+        $booking->fill($request->validated());
 
         if (!$this->bookingService->isInOpeningHours($booking)) {
             $opening_hour = Config::get('office.opening_hour');
@@ -55,17 +45,9 @@ class BookingRepository
             }
         }
 
-        $newBooking = Booking::create([
-            'start_date' => $booking->start_date,
-            'end_date' => $booking->end_date,
-            'start_time' => $booking->start_time,
-            'end_time' => $booking->end_time,
-            'day' => $booking->day,
-            'repetition' => $booking->repetition,
-            'user' => $booking->user
-        ]);
+        $booking->save();
 
-        return $newBooking->id;
+        return $booking->id;
     }
 
     private function bookingsWithSameDayAndOverlappingTime(Carbon $start_time, Carbon $end_time, mixed $day)
