@@ -6,6 +6,13 @@ This project is a full-stack web application that this application allows custom
 
 The backend is `Laravel`, the database is `PostgreSQL`, the frontend is uses `React` and `FullCalendar.io` plugin.
 
+## The application structure
+
+### Backend
+- routes/api.php accepts the requests and forwards them to BookingController
+- BookingController responds, or users BookingRepository to handle the Db transactions
+- BookingRepository uses BookingService for business logic for checking the open booking slots
+
 ## How to run?
 
 ### Set up the backend
