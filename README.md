@@ -16,6 +16,7 @@ The backend is `Laravel`, the database is `PostgreSQL`, the frontend is uses `Re
     copy .env.example .env
     ```
 - Edit your pgsql database settings (DB_USERNAME and DB_PASSWORD)
+- Create a database called `calendar_app`
 - Install backend dependencies:
     ```
       cd calendar-app
