@@ -11,12 +11,20 @@ use Illuminate\Support\Facades\Config;
 class BookingService
 {
 
-    const OPENING_HOUR = 8;
-    CONST CLOSING_HOUR = 20;
-    CONST CLOSED_DAYS = [Day::SATURDAY, Day::SUNDAY];
+    private int $openingHour;
+    private int $closingHour;
+    private array $closedDays;
+
+    public function __construct(int $openingHour, int $closingHour, array $closedDays)
+    {
+        $this->openingHour = $openingHour;
+        $this->closingHour = $closingHour;
+        $this->closedDays = $closedDays;
+    }
 
     public function isOccupied(Booking $dbBooking, Booking $request): bool
     {
+        // end_date may not be initialized, if so we create a close to relative infinity end date
         $dbBookingEndDate = $dbBooking->end_date ?? Carbon::create(9000);
         $requestEndDate = $request->end_date ?? Carbon::create(9000);
 
@@ -40,17 +48,13 @@ class BookingService
 
     public function isInOpeningHours(Booking $booking): bool
     {
-
-//        $openingHour = Config::get('office.opening_hour');
-//        $closingHour = Config::get('office.closing_hour');
-
-        if (in_array($booking->day, self::CLOSED_DAYS)) {
+        if (in_array($booking->day, $this->closedDays)) {
             return false;
         }
-        if ($booking->start_time < Carbon::createFromTime(self::OPENING_HOUR)) {
+        if ($booking->start_time < Carbon::createFromTime($this->openingHour)) {
             return false;
         }
-        if ($booking->end_time > Carbon::createFromTime(self::CLOSING_HOUR)) {
+        if ($booking->end_time > Carbon::createFromTime($this->closingHour)) {
             return false;
         }
         return true;

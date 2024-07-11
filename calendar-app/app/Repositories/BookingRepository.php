@@ -13,9 +13,14 @@ class BookingRepository
 {
     protected BookingService $bookingService;
 
-    public function __construct(BookingService $bookingService)
+    public function __construct()
     {
-        $this->bookingService = $bookingService;
+        // Here I wanted to inject the BookingService into the constructor, only the tests would have failed,
+        // since tests cannot access the config file
+        $openingHour = Config::get('office.opening_hour');
+        $closingHour = Config::get('office.closing_hour');
+        $closedDays = config('office.closed_days');
+        $this->bookingService = new BookingService($openingHour, $closingHour, $closedDays);
     }
 
     public function store(BookingRequest $request): int
@@ -30,7 +35,7 @@ class BookingRepository
         }
 
         // to check those existing bookings that are at the same day
-        // and have overlap in time
+        // and have overlap in time (start_time and end_time)
         $DbBookings = $this->bookingsWithSameDayAndOverlappingTime(
             $booking->start_time,
             $booking->end_time,
