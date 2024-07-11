@@ -51,4 +51,5 @@ The backend is `Laravel`, the database is `PostgreSQL`, the frontend is uses `Re
 ## Further improvement opportunities
 - Implementing authentication and authorization logic
 - Dockerizing the application
+- Solving the problem, that test environment cannot read config/office.php configuration file
 - Implement proper frontend testing
