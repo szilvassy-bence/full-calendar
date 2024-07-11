@@ -4,7 +4,7 @@
 
 This project is a full-stack web application that this application allows customers to book an appointment during the customer reception hours
 
-The backend is Laravel, the database is PostgreSQL, the frontend is uses React and FullCalendar.io plugin.
+The backend is `Laravel`, the database is `PostgreSQL`, the frontend is uses `React` and `FullCalendar.io` plugin.
 
 ## How to run?
 
@@ -12,6 +12,7 @@ The backend is Laravel, the database is PostgreSQL, the frontend is uses React a
 
 - Save .env.example file as .env file:
     ```
+    cd calendar-app
     copy .env.example .env
     ```
 - Edit your pgsql database settings (DB_USERNAME and DB_PASSWORD)
