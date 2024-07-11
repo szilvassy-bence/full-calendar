@@ -13,6 +13,7 @@ class BookingService
 
     const OPENING_HOUR = 8;
     CONST CLOSING_HOUR = 20;
+    CONST CLOSED_DAYS = [Day::SATURDAY, Day::SUNDAY];
 
     public function isOccupied(Booking $dbBooking, Booking $request): bool
     {
@@ -37,13 +38,13 @@ class BookingService
         return false;
     }
 
-    public function isInOpeningHours(Booking $booking)
+    public function isInOpeningHours(Booking $booking): bool
     {
 
 //        $openingHour = Config::get('office.opening_hour');
 //        $closingHour = Config::get('office.closing_hour');
 
-        if ($booking->day === Day::SATURDAY || $booking->day === Day::SUNDAY) {
+        if (in_array($booking->day, self::CLOSED_DAYS)) {
             return false;
         }
         if ($booking->start_time < Carbon::createFromTime(self::OPENING_HOUR)) {
