@@ -37,8 +37,8 @@ class BookingService
             return $dbBooking->start_date->lessThanOrEqualTo($request->start_date)
                 && $dbBookingEndDate->greaterThanOrEqualTo($request->start_date);
         } elseif ($dbBooking->repetition === $request->repetition
-                || $dbBooking->repetition === BookingRepetition::WEEKS
-                || $request->repetition === BookingRepetition::WEEKS
+                || ($dbBooking->repetition === BookingRepetition::WEEKS)
+                || ($request->repetition === BookingRepetition::WEEKS)
         ) {
             return $dbBooking->start_date->lessThanOrEqualTo($requestEndDate)
                     && $dbBookingEndDate->greaterThanOrEqualTo($request->start_date);
