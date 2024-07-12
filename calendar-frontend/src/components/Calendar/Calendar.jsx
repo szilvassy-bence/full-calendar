@@ -4,7 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import EventFormModal from '../EventFormModal';
-import { currentViewDates, generatedRecurringEvents, formatTime, compileEvent } from '../../utils/calendarUtils';
+import { formatTime, compileEvent } from '../../utils/calendarUtils';
 import useOpeningHours from '../hooks/useOpeningHours';
 import useBookings from '../hooks/useBookings';
 
@@ -73,7 +73,7 @@ const Calendar = () => {
 				plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]} 
 				initialView={'dayGridMonth'}
 				firstDay={1}
-				weekends={false}
+				weekends={true}
 				headerToolbar={{
 					left: 'prev,next today',
 					center: 'title',
