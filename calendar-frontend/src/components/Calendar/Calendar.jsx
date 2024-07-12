@@ -4,8 +4,8 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import { set, formatISO, startOfWeek, addWeeks, addDays, getWeek } from 'date-fns';
 import EventFormModal from '../EventFormModal';
+import { currentViewDates, generatedRecurringEvents, formatTime, compileEvent } from '../../utils/calendarUtils'
 
 const Calendar = () => {
 
@@ -51,7 +51,7 @@ const Calendar = () => {
 			const response = await fetch('/api/bookings');
 			if (response.ok) {
 				const data = await response.json();
-				const generatedEvents = generatedRecurringEvents(data, currentViewDates());
+				const generatedEvents = generatedRecurringEvents(data, currentViewDates(calendarRef));
 				setEvents(generatedEvents);
 			} else {
 				const data = await response.json();
@@ -63,21 +63,15 @@ const Calendar = () => {
 	}
 
 	const handleDateSelect = (selectInfo) => {
-		console.log(selectInfo);
-		const {allDay, startStr, endStr, start, end} = selectInfo;
-		const start_date = allDay ? new Date(startStr) : startStr;
-		const end_date = allDay ? addDays(new Date(endStr), -1) : endStr;
-		const startTime = allDay ? '08:00' : start.toTimeString().substring(0, 5);
-		const endTime = allDay ? '09:00' : end.toTimeString().substring(0, 5);
-		const day = new Date(startStr).toLocaleString('en-us', {weekday: 'long'}).toLowerCase();
+		const initialEvent = compileEvent(selectInfo);
 
 		setInitialEventData({
 			...initialEventData,
-			start_date: formatISO(start_date).split('T')[0],
-			end_date: formatISO(end_date).split('T')[0],
-			start_time: startTime,
-			end_time: endTime,
-			day,
+			start_date: initialEvent.start_date,
+			end_date: initialEvent.end_date,
+			start_time: initialEvent.startTime,
+			end_time: initialEvent.endTime,
+			day: initialEvent.day,
 			repetition: 'no',
 			user: ''
 		})
@@ -99,87 +93,11 @@ const Calendar = () => {
 				alert("The booking is successfully saved.")
 			} else {
 				const errorData = await response.json();
-				alert("Bad booking: " + errorData.message)
+				alert("Bad request: \n" + errorData.message)
 			}
 		} catch (error) {
 			console.log(error);
 		}
-	}
-
-	const currentViewDates = () => {
-    const calendarApi = calendarRef.current.getApi();
-    const view = calendarApi.view;
-    const start = view.activeStart;
-    const end = view.activeEnd;
-    return { start, end};
-  }
-
-	const generatedRecurringEvents = (data, {start, end}) => {
-		const events = [];
-		data.forEach(event => {
-			let startDate = new Date(event.start_date);
-			startDate.setHours(0, 0, 0, 0);
-
-			let endDate = event.end_date ? new Date(event.end_date) : addWeeks(start, 52);
-			endDate.setHours(0, 0, 0, 0);
-
-			const eventDayIndex = getDayIndex(event.day);
-
-			if (event.repetition === 'no') {
-				if (startDate >= start && startDate <= end) {
-					const eventStart = setTime(startDate, event.start_time);
-					const eventEnd = setTime(startDate, event.end_time);
-					events.push({
-						title: event.user,
-						start: formatISO(eventStart),
-						end: formatISO(eventEnd)
-					})
-				}
-			} else {
-				let current = startOfWeek(start, {weekStartsOn: 1});
-
-				while (current <= end && current <= endDate) {
-					const eventDay = addDays(current, (eventDayIndex - current.getDay() + 7) % 7);
-
-					if (eventDay >= startDate && eventDay >= start && eventDay <= end && eventDay <= endDate) {
-						if (
-							(event.repetition === 'weeks') ||
-							(event.repetition === 'odd_weeks' && !isEvenWeek(current)) ||
-							(event.repetition === 'even_weeks' && isEvenWeek(current))
-						) {
-							const eventStart = setTime(eventDay, event.start_time);
-							const eventEnd = setTime(eventDay, event.end_time);
-							events.push({
-								title: event.user,
-								start: formatISO(eventStart),
-								end: formatISO(eventEnd),
-							})
-						}
-					}
-					current = addWeeks(current, 1);
-				}
-			}
-		})
-		return events;
-	}
-
-	const setTime = (date, time) => {
-		const [hours, minutes] = time.split(":");
-		return set(date, {hours, minutes} );
-	}
-
-	const getDayIndex = day => {
-		const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    return days.indexOf(day.toLowerCase());
-	}
-
-	const isEvenWeek = date => {
-		const weekNumber = getWeek(date);
-		return weekNumber % 2 === 0;
-	}
-
-	const formatTime = hour => {
-		return hour < 10 ? `0${hour}:00:00` : `${hour}:00:00`;
 	}
 
 	return (
