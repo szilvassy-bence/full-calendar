@@ -6,13 +6,14 @@ import interactionPlugin from '@fullcalendar/interaction';
 import EventFormModal from '../EventFormModal';
 import { currentViewDates, generatedRecurringEvents, formatTime, compileEvent } from '../../utils/calendarUtils';
 import useOpeningHours from '../hooks/useOpeningHours';
+import useBookings from '../hooks/useBookings';
 
 const Calendar = () => {
 
 	const calendarRef = useRef(null);
 
 	// States
-	const [events, setEvents] = useState([]);
+	/* const [events, setEvents] = useState([]); */
 	const [modalOpen, setModalOpen] = useState(false);
 	const [initialEventData, setInitialEventData] = useState({
 		start_date: '',
@@ -24,8 +25,9 @@ const Calendar = () => {
 		user: ''
 	});
 	const openingHours = useOpeningHours();
+	const { events, fetchBookings } = useBookings(calendarRef);
 
-	async function fetchBookings() {
+	/* async function fetchBookings() {
 		try {
 			const response = await fetch('/api/bookings');
 			if (response.ok) {
@@ -39,7 +41,7 @@ const Calendar = () => {
 		} catch (error) {
 			console.log(error);
 		}
-	}
+	} */
 
 	const handleDateSelect = (selectInfo) => {
 		const initialEvent = compileEvent(selectInfo);
