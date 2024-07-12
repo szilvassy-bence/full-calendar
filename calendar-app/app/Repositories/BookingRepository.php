@@ -7,20 +7,23 @@ use App\Models\Booking;
 use App\Services\BookingService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BookingRepository
 {
     protected BookingService $bookingService;
+    protected int $openingHour;
+    protected int $closingHour;
 
     public function __construct()
     {
         // Here I wanted to inject the BookingService into the constructor, only the tests would have failed,
         // since tests cannot access the config file
-        $openingHour = Config::get('office.opening_hour');
-        $closingHour = Config::get('office.closing_hour');
+        $this->openingHour = Config::get('office.opening_hour');
+        $this->closingHour = Config::get('office.closing_hour');
         $closedDays = config('office.closed_days');
-        $this->bookingService = new BookingService($openingHour, $closingHour, $closedDays);
+        $this->bookingService = new BookingService($this->openingHour, $this->closingHour, $closedDays);
     }
 
     public function store(BookingRequest $request): int
@@ -29,26 +32,15 @@ class BookingRepository
         $booking->fill($request->validated());
 
         if (!$this->bookingService->isInOpeningHours($booking)) {
-            $opening_hour = Config::get('office.opening_hour');
-            $closing_hour = Config::get('office.closing_hour');
-            throw new HttpException(400, 'The booking is not in opening hours: between ' . $opening_hour . ':00 and ' . $closing_hour . ':00, monday to friday!' );
+
+            throw new HttpException(
+                400,
+                'The booking is not in opening hours: between ' . $this->openingHour . ':00 and ' . $this->closingHour . ':00, monday to friday!' );
         }
 
-        // to check those existing bookings that are at the same day
-        // and have overlap in time (start_time and end_time)
-        $DbBookings = $this->bookingsWithSameDayAndOverlappingTime(
-            $booking->start_time,
-            $booking->end_time,
-            $booking->day);
+        $DbBookings = $this->bookingsWithSameDayAndOverlappingTime($booking->start_time, $booking->end_time, $booking->day);
 
-        if (count($DbBookings) > 0) {
-            foreach ($DbBookings as $DbBooking) {
-                if ($this->bookingService->isOccupied($DbBooking, $booking))
-                {
-                    throw new HttpException(400, 'The time is occupied!');
-                }
-            }
-        }
+        $this->bookingService->filterForOccupation($DbBookings, $booking);
 
         $booking->save();
 

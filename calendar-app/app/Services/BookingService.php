@@ -6,7 +6,9 @@ use App\Enums\BookingRepetition;
 use App\Enums\Day;
 use App\Models\Booking;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Config;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class BookingService
 {
@@ -67,6 +69,18 @@ class BookingService
             return false;
         }
         return true;
+    }
+
+    public function filterForOccupation(Collection $DbBookings, Booking $booking): void
+    {
+        if ($DbBookings->isNotEmpty() > 0) {
+            foreach ($DbBookings as $DbBooking) {
+                if ($this->isOccupied($DbBooking, $booking))
+                {
+                    throw new HttpException(400, 'The time is occupied!');
+                }
+            }
+        }
     }
 
 }
