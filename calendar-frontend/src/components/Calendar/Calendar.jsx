@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef } from 'react'
-
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import interactionPlugin from '@fullcalendar/interaction'
+import { useState, useEffect, useRef } from 'react';
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 import EventFormModal from '../EventFormModal';
-import { currentViewDates, generatedRecurringEvents, formatTime, compileEvent } from '../../utils/calendarUtils'
+import { currentViewDates, generatedRecurringEvents, formatTime, compileEvent } from '../../utils/calendarUtils';
+import useOpeningHours from '../hooks/useOpeningHours';
 
 const Calendar = () => {
 
@@ -23,28 +23,7 @@ const Calendar = () => {
 		day: '',
 		user: ''
 	});
-	const [openingHours, setOpeningHours] = useState({
-		opening_hour: 10,
-		closing_hour: 16
-	});
-
-	useEffect(() => {
-		async function fetchOpeningHours() {
-			try {
-				const response = await fetch('/api/opening');
-				if (response.ok) {
-					const data = await response.json();
-					setOpeningHours(data);
-				} else {
-					const data = await response.json();
-					console.log(data)
-				}
-			} catch (error) {
-				console.log(error)
-			}
-		}
-		fetchOpeningHours();
-	}, [])
+	const openingHours = useOpeningHours();
 
 	async function fetchBookings() {
 		try {
