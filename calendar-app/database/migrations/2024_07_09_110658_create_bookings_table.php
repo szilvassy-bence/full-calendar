@@ -18,13 +18,13 @@ return new class extends Migration
             $table->id();
             $table->date('start_date');
             $table->date('end_date')->nullable();
-            $table->time('start_time');
-            $table->time('end_time');
+            $table->time('start_time')->index();
+            $table->time('end_time')->index();
             $table->enum('repetition', [
                 BookingRepetition::NO->value,
                 BookingRepetition::WEEKS->value,
                 BookingRepetition::EVEN_WEEKS->value,
-                BookingRepetition::ODD_WEEKS->value])->default(BookingRepetition::NO->value); // php 8 enum
+                BookingRepetition::ODD_WEEKS->value])->default(BookingRepetition::NO->value);
             $table->enum('day', [Day::MONDAY->value, Day::TUESDAY->value, Day::WEDNESDAY->value, Day::THURSDAY->value,
                 Day::FRIDAY->value, Day::SATURDAY->value, Day::SUNDAY->value]);
             $table->string('user');
