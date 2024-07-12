@@ -28,43 +28,44 @@ class DatabaseSeeder extends Seeder
 
         Booking::factory()->create([
             'start_date' => carbon::create(2024,9,8),
-            'start_time' => carbon::create(2025,9,8,8,0,0)->toTimeString(),
-            'end_time' => carbon::create(2025,9,8,10,0,0)->toTimeString(),
-            'day' => Day::SUNDAY->value,
-            'repetition' => BookingRepetition::NO->value
+            'end_date' => carbon::create(2024,9,8),
+            'start_time' => carbon::createFromTime(8),
+            'end_time' => carbon::createFromTime(10),
+            'day' => Day::SUNDAY,
+            'repetition' => BookingRepetition::NO
         ]);
 
         Booking::factory()->create([
             'start_date' => carbon::create(2024,1,1),
-            'start_time' => carbon::create(2024,1,8,10)->toTimeString(),
-            'end_time' => carbon::create(2025,1,8,12)->toTimeString(),
-            'day' => Day::MONDAY->value,
-            'repetition' => BookingRepetition::EVEN_WEEKS->value
+            'start_time' => carbon::createFromTime(10),
+            'end_time' => carbon::createFromTime(12),
+            'day' => Day::MONDAY,
+            'repetition' => BookingRepetition::EVEN_WEEKS
         ]);
 
         Booking::factory()->create([
             'start_date' => carbon::create(2024,1,1),
-            'start_time' => carbon::create(2024,1,3,12)->toTimeString(),
-            'end_time' => carbon::create(2025,1,3,16)->toTimeString(),
-            'day' => Day::WEDNESDAY->value,
-            'repetition' => BookingRepetition::EVEN_WEEKS->value
+            'start_time' => carbon::createFromTime(12),
+            'end_time' => carbon::createFromTime(16),
+            'day' => Day::WEDNESDAY,
+            'repetition' => BookingRepetition::ODD_WEEKS
         ]);
 
         Booking::factory()->create([
             'start_date' => carbon::create(2024,1,1),
-            'start_time' => carbon::create(2024,1,5,12)->toTimeString(),
-            'end_time' => carbon::create(2025,1,5,16)->toTimeString(),
-            'day' => Day::FRIDAY->value,
-            'repetition' => BookingRepetition::WEEKS->value
+            'start_time' => carbon::createFromTime(10),
+            'end_time' => carbon::createFromTime(16),
+            'day' => Day::FRIDAY,
+            'repetition' => BookingRepetition::WEEKS
         ]);
 
         Booking::factory()->create([
             'start_date' => carbon::create(2024,6,1),
             'end_date' => carbon::create(2024,11,30),
-            'start_time' => carbon::create(2024,1,5,16)->toTimeString(),
-            'end_time' => carbon::create(2025,1,5,20)->toTimeString(),
-            'day' => Day::THURSDAY->value,
-            'repetition' => BookingRepetition::WEEKS->value
+            'start_time' => carbon::createFromTime(16),
+            'end_time' => carbon::createFromTime(20),
+            'day' => Day::THURSDAY,
+            'repetition' => BookingRepetition::WEEKS
         ]);
     }
 
