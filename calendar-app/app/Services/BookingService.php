@@ -28,22 +28,31 @@ class BookingService
         $dbBookingEndDate = $dbBooking->end_date ?? Carbon::create(9000);
         $requestEndDate = $request->end_date ?? Carbon::create(9000);
 
-        if ($dbBooking->repetition === BookingRepetition::NO && $request->repetition === BookingRepetition::NO) {
-            return $dbBooking->start_date->isSameDay($request->start_date);
-        } elseif ($dbBooking->repetition === BookingRepetition::NO && $request->repetition !== BookingRepetition::NO) {
-            return $dbBooking->start_date->greaterThanOrEqualTo($request->start_date)
-                && $dbBooking->start_date->lessThanOrEqualTo($requestEndDate);
-        } elseif ($dbBooking->repetition !== BookingRepetition::NO && $request->repetition === BookingRepetition::NO) {
-            return $dbBooking->start_date->lessThanOrEqualTo($request->start_date)
-                && $dbBookingEndDate->greaterThanOrEqualTo($request->start_date);
-        } elseif ($dbBooking->repetition === $request->repetition
-                || ($dbBooking->repetition === BookingRepetition::WEEKS)
-                || ($request->repetition === BookingRepetition::WEEKS)
-        ) {
-            return $dbBooking->start_date->lessThanOrEqualTo($requestEndDate)
+        $dbRepetition = $dbBooking->repetition;
+        $reqRepetition = $request->repetition;
+
+        switch (true)
+        {
+            case $dbRepetition === BookingRepetition::NO && $reqRepetition === BookingRepetition::NO:
+                return $dbBooking->start_date->isSameDay($request->start_date);
+
+            case $dbRepetition === BookingRepetition::NO && $reqRepetition !== BookingRepetition::NO:
+                return $dbBooking->start_date->greaterThanOrEqualTo($request->start_date)
+                    && $dbBooking->start_date->lessThanOrEqualTo($requestEndDate);
+
+            case $dbRepetition !== BookingRepetition::NO && $reqRepetition === BookingRepetition::NO:
+                return $dbBooking->start_date->lessThanOrEqualTo($request->start_date)
                     && $dbBookingEndDate->greaterThanOrEqualTo($request->start_date);
+
+            case $dbRepetition === $reqRepetition
+                || $dbRepetition === BookingRepetition::WEEKS
+                || $reqRepetition === BookingRepetition::WEEKS:
+                return $dbBooking->start_date->lessThanOrEqualTo($requestEndDate)
+                    && $dbBookingEndDate->greaterThanOrEqualTo($request->start_date);
+
+            default:
+                return false;
         }
-        return false;
     }
 
     public function isInOpeningHours(Booking $booking): bool
