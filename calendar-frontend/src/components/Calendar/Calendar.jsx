@@ -13,7 +13,6 @@ const Calendar = () => {
 	const calendarRef = useRef(null);
 
 	// States
-	/* const [events, setEvents] = useState([]); */
 	const [modalOpen, setModalOpen] = useState(false);
 	const [initialEventData, setInitialEventData] = useState({
 		start_date: '',
@@ -24,24 +23,10 @@ const Calendar = () => {
 		day: '',
 		user: ''
 	});
+
+	// custom hooks
 	const openingHours = useOpeningHours();
 	const { events, fetchBookings } = useBookings(calendarRef);
-
-	/* async function fetchBookings() {
-		try {
-			const response = await fetch('/api/bookings');
-			if (response.ok) {
-				const data = await response.json();
-				const generatedEvents = generatedRecurringEvents(data, currentViewDates(calendarRef));
-				setEvents(generatedEvents);
-			} else {
-				const data = await response.json();
-				console.log(data)
-			}
-		} catch (error) {
-			console.log(error);
-		}
-	} */
 
 	const handleDateSelect = (selectInfo) => {
 		const initialEvent = compileEvent(selectInfo);
